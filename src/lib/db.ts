@@ -1,9 +1,12 @@
 import { mkdirSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { createClient, type Client } from "@libsql/client";
+import { SEED_PRODUCTS } from "./seed-data";
 
 let client: Client | undefined;
 let schemaPromise: Promise<void> | undefined;
+let usingFallback = false;
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS products (
@@ -59,7 +62,11 @@ const MIGRATIONS = [
 export function db(): Client {
   if (!client) {
     const configured = process.env.TURSO_DATABASE_URL?.trim();
-    const url = configured || `file:${path.join(process.cwd(), "data", "ws.db")}`;
+    const fallbackDir = process.env.VERCEL
+      ? path.join(tmpdir(), "ws-storefront")
+      : path.join(process.cwd(), "data");
+    const url = configured || `file:${path.join(fallbackDir, "ws.db")}`;
+    usingFallback = !configured;
     if (url.startsWith("file:")) {
       mkdirSync(path.dirname(url.slice("file:".length)), { recursive: true });
     }
@@ -82,6 +89,33 @@ export function ensureSchema(): Promise<void> {
           await db().execute(statement);
         } catch (error) {
           if (!/duplicate column|already exists/i.test(String(error))) throw error;
+        }
+      }
+      if (usingFallback) {
+        const count = await db().execute("SELECT COUNT(*) AS total FROM products");
+        if (Number(count.rows[0]?.total ?? 0) === 0) {
+          for (const product of SEED_PRODUCTS) {
+            await db().execute({
+              sql: `INSERT OR IGNORE INTO products (
+                id, slug, name, subtitle, category, description, price_kobo, compare_at_kobo,
+                image_front, image_back, variants, featured, active
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+              args: [
+                product.id,
+                product.slug,
+                product.name,
+                product.subtitle,
+                product.category,
+                product.description,
+                product.priceKobo,
+                product.compareAtKobo,
+                product.imageFront,
+                product.imageBack,
+                JSON.stringify(product.variants),
+                product.featured ? 1 : 0,
+              ],
+            });
+          }
         }
       }
     })().catch((error) => {
