@@ -97,6 +97,7 @@ const SCHEMA = [
 
 const MIGRATIONS = [
   `ALTER TABLE orders ADD COLUMN gateway TEXT NOT NULL DEFAULT 'paystack'`,
+  `ALTER TABLE email_verification_tokens ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0`,
 ];
 
 export function db(): Client {

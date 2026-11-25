@@ -14,6 +14,6 @@ export async function POST() {
     ok: result.ok,
     message: result.message,
     emailSent: result.emailSent,
-    devVerificationUrl: result.devVerificationUrl,
+    devOtp: result.devOtp,
   });
 }

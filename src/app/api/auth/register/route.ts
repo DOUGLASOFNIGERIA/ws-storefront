@@ -20,6 +20,6 @@ export async function POST(request: Request) {
     ok: true,
     message: result.message,
     emailSent: result.emailSent,
-    devVerificationUrl: result.devVerificationUrl,
+    devOtp: result.devOtp,
   });
 }

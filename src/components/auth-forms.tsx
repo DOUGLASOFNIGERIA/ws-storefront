@@ -7,11 +7,10 @@ import { useState } from "react";
 interface AuthResponse {
   ok: boolean;
   message: string;
-  devVerificationUrl?: string;
+  devOtp?: string;
 }
 
 export function RegisterForm() {
-  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<AuthResponse | null>(null);
 
@@ -33,10 +32,7 @@ export function RegisterForm() {
       });
       const data = (await response.json()) as AuthResponse;
       setResult(data);
-      if (data.ok) {
-        event.currentTarget.reset();
-        router.refresh();
-      }
+      if (data.ok) event.currentTarget.reset();
     } catch {
       setResult({ ok: false, message: "Something went wrong. Please try again." });
     } finally {
@@ -85,17 +81,24 @@ export function RegisterForm() {
         {submitting ? "Creating account…" : "Create account"}
       </button>
       {result && (
-        <div className={result.ok ? "border border-accent/40 bg-accent/10 p-4 text-sm text-cream" : "border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200"}>
+        <div
+          className={
+            result.ok
+              ? "border border-accent/40 bg-accent/10 p-4 text-sm text-cream"
+              : "border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200"
+          }
+        >
           <p>{result.message}</p>
-          {result.devVerificationUrl && (
-            <p className="mt-3 break-all text-xs text-muted">
-              Development link:{" "}
-              <Link href={result.devVerificationUrl} className="text-accent underline">
-                {result.devVerificationUrl}
-              </Link>
+          {result.devOtp && (
+            <p className="mt-3 text-xs text-muted">
+              Development code: <span className="font-semibold text-accent">{result.devOtp}</span>
             </p>
           )}
-          {result.ok && <p className="mt-2 text-xs text-muted">You are signed in. Check the header for your account.</p>}
+          {result.ok && (
+            <Link href="/verify-email" className="mt-3 inline-block text-xs text-accent underline">
+              Enter your verification code
+            </Link>
+          )}
         </div>
       )}
     </form>
@@ -174,33 +177,79 @@ export function LoginForm() {
   );
 }
 
-export function ResendVerificationButton() {
-  const [state, setState] = useState<{ loading: boolean; message: string; url?: string }>({
-    loading: false,
-    message: "",
-  });
+export function OtpVerificationForm({ email }: { email: string }) {
+  const router = useRouter();
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  async function verify(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setVerifying(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = (await response.json()) as AuthResponse;
+      setMessage(data.message);
+      setSuccess(data.ok);
+      if (data.ok) {
+        setCode("");
+        router.push("/account");
+        router.refresh();
+      }
+    } catch {
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   async function resend() {
-    setState({ loading: true, message: "" });
+    setResending(true);
+    setMessage("");
     try {
       const response = await fetch("/api/auth/resend-verification", { method: "POST" });
       const data = (await response.json()) as AuthResponse;
-      setState({ loading: false, message: data.message, url: data.devVerificationUrl });
+      const devCode = data.devOtp ? ` Development code: ${data.devOtp}.` : "";
+      setMessage(`${data.message}${devCode}`);
     } catch {
-      setState({ loading: false, message: "Something went wrong. Please try again." });
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setResending(false);
     }
   }
 
   return (
-    <div className="mt-4">
-      <button type="button" onClick={resend} disabled={state.loading} className="btn-outline py-3">
-        {state.loading ? "Sending…" : "Resend verification email"}
+    <div className="mt-8">
+      <p className="text-xs uppercase tracking-widest2 text-muted">Code sent to {email}</p>
+      <form onSubmit={verify} className="mt-5 flex flex-col gap-4 sm:flex-row">
+        <input
+          value={code}
+          onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          pattern="[0-9]*"
+          maxLength={6}
+          required
+          aria-label="6-digit verification code"
+          className="field text-center text-2xl tracking-[0.4em]"
+          placeholder="000000"
+        />
+        <button type="submit" disabled={verifying || success} className="btn-primary whitespace-nowrap py-5">
+          {verifying ? "Verifying…" : "Verify code"}
+        </button>
+      </form>
+      <button type="button" onClick={resend} disabled={resending} className="btn-outline mt-4 py-3">
+        {resending ? "Sending…" : "Resend code"}
       </button>
-      {state.message && <p className="mt-3 text-sm text-cream/75">{state.message}</p>}
-      {state.url && (
-        <Link href={state.url} className="mt-2 block break-all text-xs text-accent underline">
-          Development link: {state.url}
-        </Link>
+      {message && (
+        <p className={success ? "mt-4 text-sm text-accent" : "mt-4 text-sm text-cream/75"}>{message}</p>
       )}
     </div>
   );

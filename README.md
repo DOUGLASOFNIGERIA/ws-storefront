@@ -43,8 +43,11 @@ The local database is created at `data/ws.db`. Product photography is loaded fro
 | `WS_DEMO_PAYMENTS` | Set to `true` **only** when no secret key is configured to test checkout without charging money. |
 | `ADMIN_TOKEN` | Reserved for admin endpoints. |
 | `SESSION_SECRET` | Signs session cookies. If missing, a generated secret is persisted in `app_settings`. |
-| `RESEND_API_KEY` | Resend API key used to send verification emails. Without it, an admin can verify accounts manually. |
-| `EMAIL_FROM` | Verified sender address for Resend. |
+| `SMTP_HOST` | SMTP host for verification emails; defaults to `smtp.gmail.com`. |
+| `SMTP_PORT` | SMTP port; defaults to `587`. |
+| `SMTP_USER` | Gmail address used to send verification codes. |
+| `SMTP_PASS` | Google App Password for `SMTP_USER`. Without it, an admin can verify accounts manually. |
+| `EMAIL_FROM` | Sender address shown on verification emails; defaults to the Gmail account. |
 | `ADMIN_EMAILS` | Comma-separated admin emails. First registered account is bootstrapped as admin when unset. |
 
 ## Workflow
@@ -68,11 +71,12 @@ The local database is created at `data/ws.db`. Product photography is loaded fro
 | `/api/payments/webhook` | POST | Paystack `charge.success` webhook (HMAC SHA512 verified) |
 | `/api/payments/flutterwave/webhook` | POST | Flutterwave `charge.completed` webhook (`verif-hash` verified) |
 | `/api/health` | GET | Database connectivity check |
-| `/api/auth/register` | POST | Create account, issue session, send verification email |
+| `/api/auth/register` | POST | Create account, issue session, send 6-digit verification code |
 | `/api/auth/login` | POST | Sign in and issue session cookie |
 | `/api/auth/logout` | POST | Clear session cookie |
 | `/api/auth/me` | GET | Current signed-in user |
-| `/api/auth/resend-verification` | POST | Send a fresh verification link |
+| `/api/auth/verify-otp` | POST | Verify the signed-in user&apos;s 6-digit code |
+| `/api/auth/resend-verification` | POST | Send a fresh verification code |
 | `/api/reviews` | GET/POST | List approved reviews or submit a pending review |
 | `/api/reviews/:id` | PATCH | Approve or reject a review (admin only) |
 
@@ -88,7 +92,7 @@ npm run build
 ## Deploying
 
 1. Create a Turso database and run `npm run db:seed` locally with `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` pointing at it.
-2. Add the same Turso variables, payment keys, `NEXT_PUBLIC_APP_URL`, `SESSION_SECRET`, `RESEND_API_KEY`, `EMAIL_FROM` and `ADMIN_EMAILS` to the Vercel project.
+2. Add the same Turso variables, payment keys, `NEXT_PUBLIC_APP_URL`, `SESSION_SECRET`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` and `ADMIN_EMAILS` to the Vercel project. For Gmail, create a Google App Password and store it as `SMTP_PASS`.
 3. Register `https://<your-domain>/api/payments/webhook` in Paystack and `https://<your-domain>/api/payments/flutterwave/webhook` in Flutterwave.
 4. Deploy with `npm run build` (or import the repository into Vercel).
 5. Leave `WS_DEMO_PAYMENTS` unset in production.

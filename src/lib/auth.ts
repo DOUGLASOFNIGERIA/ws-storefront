@@ -1,12 +1,14 @@
-import { createHash, createHmac, randomBytes, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomInt, randomUUID, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { db, ensureSchema } from "./db";
-import { sendVerificationEmail } from "./email";
+import { sendVerificationOtp } from "./email";
 import type { SessionUser } from "./types";
 
 const COOKIE_NAME = "ws_session";
 const SESSION_AGE_SECONDS = 60 * 60 * 24 * 30;
-const VERIFICATION_AGE_HOURS = 24;
+const VERIFICATION_AGE_MINUTES = 10;
+const VERIFICATION_MAX_ATTEMPTS = 5;
+const VERIFICATION_RESEND_SECONDS = 60;
 let fallbackSecret: string | undefined;
 
 interface SessionPayload {
@@ -19,7 +21,7 @@ export interface AuthResult {
   message: string;
   user?: SessionUser;
   emailSent?: boolean;
-  devVerificationUrl?: string;
+  devOtp?: string;
 }
 
 function base64url(value: string): string {
@@ -163,19 +165,30 @@ export async function isAdminUser(user: SessionUser | null): Promise<boolean> {
   return configured.includes(user.email.toLowerCase()) || user.role === "admin";
 }
 
-async function createVerificationToken(userId: string): Promise<string> {
-  const token = randomBytes(32).toString("hex");
+function storedDate(value: string): number {
+  const normalized = value.includes("T") ? value : `${value.replace(" ", "T")}Z`;
+  return new Date(normalized).getTime();
+}
+
+async function issueVerificationOtp(userId: string): Promise<string> {
+  await db().execute({
+    sql: "UPDATE email_verification_tokens SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL",
+    args: [userId],
+  });
+
+  const id = `evt_${randomUUID()}`;
+  const otp = randomInt(0, 1_000_000).toString().padStart(6, "0");
   await db().execute({
     sql: `INSERT INTO email_verification_tokens (id, user_id, token_hash, expires_at)
           VALUES (?, ?, ?, ?)`,
     args: [
-      `evt_${randomUUID()}`,
+      id,
       userId,
-      hashToken(token),
-      new Date(Date.now() + VERIFICATION_AGE_HOURS * 60 * 60 * 1000).toISOString(),
+      hashToken(`${id}:${otp}`),
+      new Date(Date.now() + VERIFICATION_AGE_MINUTES * 60 * 1000).toISOString(),
     ],
   });
-  return token;
+  return otp;
 }
 
 export async function registerUser(input: {
@@ -222,17 +235,17 @@ export async function registerUser(input: {
     emailVerified: false,
     role: role as SessionUser["role"],
   };
-  const token = await createVerificationToken(id);
-  const delivery = await sendVerificationEmail(user.email, user.name, token);
+  const otp = await issueVerificationOtp(id);
+  const delivery = await sendVerificationOtp(user.email, user.name, otp);
 
   return {
     ok: true,
     emailSent: delivery.ok,
     message: delivery.ok
-      ? "Account created. Check your email to verify your address."
-      : "Account created, but we could not send the verification email. Ask an admin to verify your account.",
+      ? "Account created. Check your email for your 6-digit verification code."
+      : "Account created, but we could not send the verification code. Ask an admin to verify your account.",
     user,
-    ...(process.env.NODE_ENV !== "production" ? { devVerificationUrl: delivery.url } : {}),
+    ...(process.env.NODE_ENV !== "production" ? { devOtp: otp } : {}),
   };
 }
 
@@ -267,26 +280,51 @@ export async function loginUser(input: {
   return { ok: true, message: "Signed in.", user };
 }
 
-export async function verifyEmail(token: string): Promise<boolean> {
+export async function verifyOtpForUser(user: SessionUser, otp: string): Promise<AuthResult> {
   await ensureSchema();
-  const result = await db().execute({
-    sql: `SELECT id, user_id, expires_at FROM email_verification_tokens
-          WHERE token_hash = ? AND used_at IS NULL LIMIT 1`,
-    args: [hashToken(token)],
-  });
-  const row = result.rows[0];
-  if (!row) return false;
-  if (new Date(String(row.expires_at)).getTime() < Date.now()) return false;
+  if (!/^\d{6}$/.test(otp)) {
+    return { ok: false, message: "Enter the 6-digit code from your email." };
+  }
 
-  await db().execute({
-    sql: "UPDATE users SET email_verified = 1 WHERE id = ?",
-    args: [String(row.user_id)],
+  const result = await db().execute({
+    sql: `SELECT id, token_hash, expires_at, attempts FROM email_verification_tokens
+          WHERE user_id = ? AND used_at IS NULL ORDER BY created_at DESC LIMIT 5`,
+    args: [user.id],
   });
-  await db().execute({
-    sql: "UPDATE email_verification_tokens SET used_at = datetime('now') WHERE id = ?",
-    args: [String(row.id)],
-  });
-  return true;
+
+  for (const row of result.rows) {
+    const id = String(row.id);
+    const attempts = Number(row.attempts ?? 0);
+    const remaining = VERIFICATION_MAX_ATTEMPTS - attempts;
+    if (remaining <= 0 || storedDate(String(row.expires_at)) < Date.now()) continue;
+
+    if (safeEqualHex(hashToken(`${id}:${otp}`), String(row.token_hash))) {
+      await db().execute({
+        sql: "UPDATE users SET email_verified = 1 WHERE id = ?",
+        args: [user.id],
+      });
+      await db().execute({
+        sql: "UPDATE email_verification_tokens SET used_at = datetime('now') WHERE id = ?",
+        args: [id],
+      });
+      return {
+        ok: true,
+        message: "Email verified.",
+        user: { ...user, emailVerified: true },
+      };
+    }
+
+    await db().execute({
+      sql: "UPDATE email_verification_tokens SET attempts = attempts + 1 WHERE id = ?",
+      args: [id],
+    });
+    return {
+      ok: false,
+      message: `Incorrect code. ${remaining - 1} attempts remaining.`,
+    };
+  }
+
+  return { ok: false, message: "Your code has expired or was already used. Request a new one." };
 }
 
 export async function listUsers(): Promise<SessionUser[]> {
@@ -310,7 +348,14 @@ export async function adminVerifyUser(userId: string): Promise<boolean> {
     sql: "UPDATE users SET email_verified = 1 WHERE id = ?",
     args: [userId],
   });
-  return Number(result.rowsAffected ?? 0) > 0;
+  if (Number(result.rowsAffected ?? 0) > 0) {
+    await db().execute({
+      sql: "UPDATE email_verification_tokens SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL",
+      args: [userId],
+    });
+    return true;
+  }
+  return false;
 }
 
 export async function resendVerification(user: SessionUser): Promise<AuthResult> {
@@ -318,19 +363,29 @@ export async function resendVerification(user: SessionUser): Promise<AuthResult>
     return { ok: true, message: "Your email is already verified." };
   }
 
-  await db().execute({
-    sql: "UPDATE email_verification_tokens SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL",
+  const latest = await db().execute({
+    sql: `SELECT created_at FROM email_verification_tokens
+          WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`,
     args: [user.id],
   });
-  const token = await createVerificationToken(user.id);
-  const delivery = await sendVerificationEmail(user.email, user.name, token);
+  const lastSent = latest.rows[0] ? storedDate(String(latest.rows[0].created_at)) : 0;
+  const waitSeconds = Math.ceil((VERIFICATION_RESEND_SECONDS * 1000 - (Date.now() - lastSent)) / 1000);
+  if (waitSeconds > 0) {
+    return {
+      ok: false,
+      message: `Please wait ${waitSeconds} second${waitSeconds === 1 ? "" : "s"} before requesting another code.`,
+    };
+  }
+
+  const otp = await issueVerificationOtp(user.id);
+  const delivery = await sendVerificationOtp(user.email, user.name, otp);
 
   return {
     ok: true,
     emailSent: delivery.ok,
     message: delivery.ok
-      ? "Verification email sent."
-      : "We could not send the verification email. Ask an admin to verify your account.",
-    ...(process.env.NODE_ENV !== "production" ? { devVerificationUrl: delivery.url } : {}),
+      ? "A new 6-digit verification code has been sent."
+      : "We could not send the verification code. Ask an admin to verify your account.",
+    ...(process.env.NODE_ENV !== "production" ? { devOtp: otp } : {}),
   };
 }

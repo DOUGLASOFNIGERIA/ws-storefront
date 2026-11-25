@@ -22,8 +22,7 @@ export default async function RegisterPage() {
             Make it yours.
           </h1>
           <p className="mt-7 max-w-md text-sm leading-relaxed text-cream/70">
-            One account for orders, delivery details and reviews. We will send a short verification link to confirm
-            your email.
+            One account for orders, delivery details and reviews. We will send a 6-digit code to confirm your email.
           </p>
           <div className="mt-10 border-t border-cream/15 pt-8 text-sm text-muted">
             Already have an account?{" "}

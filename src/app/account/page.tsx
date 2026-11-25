@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogoutButton, ResendVerificationButton } from "@/components/auth-forms";
+import { LogoutButton, OtpVerificationForm } from "@/components/auth-forms";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { formatNaira } from "@/lib/money";
 import { getOrdersByEmail } from "@/lib/orders";
@@ -53,10 +53,10 @@ export default async function AccountPage() {
         <section className="mt-10 border border-accent/35 bg-accent/10 p-8">
           <h2 className="font-display text-3xl">Verify your email</h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-cream/75">
-            Confirm your address to leave product reviews. Check your inbox for the link we sent, or request another
+            Confirm your address to leave product reviews. Enter the 6-digit code from your inbox, or request a fresh
             one below.
           </p>
-          <ResendVerificationButton />
+          <OtpVerificationForm email={user.email} />
         </section>
       )}
 
