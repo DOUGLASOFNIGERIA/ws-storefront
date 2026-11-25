@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { CartProvider } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
-const display = Bebas_Neue({
-  weight: "400",
+const display = Cormorant_Garamond({
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-const sans = Inter({
+const sans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     template: "%s | WS",
   },
   description:
-    "WS — curated wristwatches, clothing and fragrance. Designed to be worn, made to be remembered.",
+    "A small, considered edit of watches, clothing and fragrance from Lagos. Chosen to be worn, not just owned.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   openGraph: {
     title: "WS | Watches, Clothing & Perfume",
-    description: "The collection. Wristwear, clothing and scent.",
+    description: "A small, considered edit of watches, clothing and fragrance from Lagos.",
     type: "website",
   },
 };

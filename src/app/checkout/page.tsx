@@ -69,7 +69,7 @@ export default function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <div className="mx-auto max-w-[900px] px-5 py-24 text-center sm:px-8">
-        <p className="font-display text-5xl tracking-wide sm:text-7xl">Your bag is empty.</p>
+        <p className="font-display text-5xl tracking-[-0.01em] sm:text-7xl">Your bag is empty.</p>
         <p className="mt-4 text-sm text-muted">Add something before checking out.</p>
         <Link href="/collections/all" className="btn-primary mt-10">
           Shop all
@@ -82,12 +82,12 @@ export default function CheckoutPage() {
     <div className="mx-auto max-w-[1400px] px-5 py-16 sm:px-8 lg:py-24">
       <Link
         href="/cart"
-        className="mb-10 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest2 text-muted hover:text-gold"
+        className="mb-10 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest2 text-muted hover:text-accent"
       >
         <ArrowLeft size={14} /> Back to cart
       </Link>
       <p className="eyebrow">Almost yours</p>
-      <h1 className="mt-4 font-display text-6xl tracking-wide sm:text-8xl">Checkout</h1>
+      <h1 className="mt-4 font-display text-5xl tracking-[-0.02em] sm:text-7xl">Checkout</h1>
 
       <div className="mt-14 grid gap-12 lg:grid-cols-[1.3fr_1fr]">
         <form onSubmit={submit} className="space-y-8">
@@ -142,7 +142,7 @@ export default function CheckoutPage() {
                     key={option.id}
                     className={`flex cursor-pointer items-start gap-4 border p-4 transition-colors ${
                       active
-                        ? "border-gold bg-gold/10"
+                        ? "border-accent bg-accent/10"
                         : "border-cream/15 hover:border-cream/40"
                     }`}
                   >
@@ -154,7 +154,7 @@ export default function CheckoutPage() {
                       onChange={() => setGateway(option.id)}
                       className="mt-1 accent-[#c9a227]"
                     />
-                    <Icon size={18} className="mt-0.5 shrink-0 text-gold" />
+                    <Icon size={18} className="mt-0.5 shrink-0 text-accent" />
                     <span>
                       <span className="block text-sm font-semibold uppercase tracking-widest2">
                         {option.label}
@@ -224,7 +224,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-cream/15 pt-5">
               <dt className="font-semibold uppercase tracking-widest2">Total</dt>
-              <dd className="font-display text-3xl tracking-wide">
+              <dd className="font-display text-3xl tracking-[-0.01em]">
                 {formatNaira(subtotalKobo + delivery)}
               </dd>
             </div>

@@ -5,19 +5,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#17070c",
-        wine: "#4b0d1a",
-        "wine-light": "#6c1a2b",
-        cream: "#f5efe4",
-        muted: "#b9a99d",
-        gold: "#d9b26a",
+        ink: "#1c1714",
+        surface: "#2a221d",
+        wine: "#3a2a24",
+        "wine-light": "#4a372f",
+        cream: "#f7f2e9",
+        muted: "#b5a79a",
+        gold: "#c79a6b",
+        accent: "#b96f52",
       },
       fontFamily: {
-        display: ["var(--font-display)", "Impact", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       letterSpacing: {
-        widest2: "0.28em",
+        widest2: "0.2em",
       },
       keyframes: {
         "fade-up": {

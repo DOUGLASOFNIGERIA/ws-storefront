@@ -81,16 +81,16 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "ws-c-01",
-    slug: "ws-vs-everybody-tee",
-    name: "WS Vs Everybody Tee",
+    slug: "studio-tee",
+    name: "Studio Tee",
     subtitle: "Black / White",
     category: "clothing",
     description:
-      "Heavyweight combed cotton with the WS Vs Everybody print at the chest. Oversized fit, soft hand feel.",
+      "Heavyweight combed cotton with a small WS mark at the chest. Oversized fit, soft hand feel.",
     priceKobo: 42_000_00,
     compareAtKobo: 50_000_00,
-    imageFront: "/products/ws-vs-everybody-tee-front.svg",
-    imageBack: "/products/ws-vs-everybody-tee-back.svg",
+    imageFront: "/products/studio-tee-front.svg",
+    imageBack: "/products/studio-tee-back.svg",
     variants: [
       { name: "S", stock: 14 },
       { name: "M", stock: 22 },
@@ -140,16 +140,16 @@ export const SEED_PRODUCTS: SeedProduct[] = [
   },
   {
     id: "ws-c-04",
-    slug: "everybody-tank",
-    name: "Everybody Tank",
+    slug: "everyday-tank",
+    name: "Everyday Tank",
     subtitle: "Black / White",
     category: "clothing",
     description:
-      "A ribbed cotton tank cut for movement, with a small WS mark at the chest.",
+      "A ribbed cotton tank cut for movement, finished with a small WS mark at the chest.",
     priceKobo: 35_000_00,
     compareAtKobo: null,
-    imageFront: "/products/everybody-tank-front.svg",
-    imageBack: "/products/everybody-tank-back.svg",
+    imageFront: "/products/everyday-tank-front.svg",
+    imageBack: "/products/everyday-tank-back.svg",
     variants: [
       { name: "S", stock: 20 },
       { name: "M", stock: 24 },

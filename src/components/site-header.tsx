@@ -11,7 +11,7 @@ const links = [
   { href: "/collections/all", label: "Shop all" },
   { href: "/collections/watches", label: "Watches" },
   { href: "/collections/clothing", label: "Clothing" },
-  { href: "/collections/perfume", label: "Perfume" },
+  { href: "/collections/perfume", label: "Fragrance" },
 ];
 
 export function SiteHeader() {
@@ -20,26 +20,32 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-cream/10 bg-ink/90 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
-        <Link href="/" className="group flex items-baseline gap-3" aria-label="WS home">
-          <span className="font-display text-4xl leading-none tracking-wide text-cream transition-colors group-hover:text-gold">
+    <header className="sticky top-0 z-40 border-b border-cream/10 bg-ink/95 backdrop-blur-md">
+      <div className="border-b border-cream/10">
+        <div className="mx-auto flex h-8 max-w-[1600px] items-center justify-center px-5 text-[10px] uppercase tracking-widest2 text-muted sm:px-8">
+          Complimentary delivery over ₦150,000 · Nationwide
+        </div>
+      </div>
+      <div className="mx-auto flex h-[72px] max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
+        <Link href="/" className="group flex items-center gap-3" aria-label="WS home">
+          <span className="font-display text-4xl leading-none tracking-[-0.02em] text-cream transition-colors group-hover:text-accent">
             WS
           </span>
-          <span className="hidden text-[9px] font-semibold uppercase tracking-widest2 text-muted sm:block">
-            Vs Everybody
+          <span className="hidden h-7 w-px bg-cream/20 sm:block" />
+          <span className="hidden text-[10px] uppercase tracking-widest2 text-muted sm:block">
+            Lagos
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-9 lg:flex" aria-label="Main navigation">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-[11px] font-semibold uppercase tracking-widest2 transition-colors hover:text-gold ${
-                  active ? "text-gold" : "text-cream/80"
+                className={`border-b pb-1 text-[10px] font-semibold uppercase tracking-widest2 transition-colors hover:text-accent ${
+                  active ? "border-accent text-cream" : "border-transparent text-cream/75"
                 }`}
               >
                 {link.label}
@@ -52,17 +58,17 @@ export function SiteHeader() {
           <Link
             href="/search"
             aria-label="Search products"
-            className="text-cream/80 transition-colors hover:text-gold"
+            className="text-cream/80 transition-colors hover:text-accent"
           >
-            <Search size={20} strokeWidth={1.5} />
+            <Search size={19} strokeWidth={1.5} />
           </Link>
           <button
             type="button"
             onClick={openCart}
             aria-label={`Open cart, ${count} items`}
-            className="flex items-center gap-2 text-cream/80 transition-colors hover:text-gold"
+            className="flex items-center gap-2 text-cream/80 transition-colors hover:text-accent"
           >
-            <ShoppingBag size={20} strokeWidth={1.5} />
+            <ShoppingBag size={19} strokeWidth={1.5} />
             <span className="text-xs tabular-nums">{hydrated ? count : 0}</span>
           </button>
           <button
@@ -72,20 +78,20 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             className="text-cream lg:hidden"
           >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            {menuOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
         </div>
       </div>
 
       {menuOpen && (
-        <nav className="border-t border-cream/10 bg-ink px-5 py-6 lg:hidden" aria-label="Mobile navigation">
-          <div className="mx-auto flex max-w-[1600px] flex-col gap-4">
+        <nav className="border-t border-cream/10 bg-ink px-5 py-7 lg:hidden" aria-label="Mobile navigation">
+          <div className="mx-auto flex max-w-[1600px] flex-col gap-1">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="font-display text-3xl tracking-wide text-cream/90 hover:text-gold"
+                className="border-b border-cream/10 py-3 font-display text-4xl leading-none text-cream/90 hover:text-accent"
               >
                 {link.label}
               </Link>

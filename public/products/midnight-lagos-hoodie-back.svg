@@ -9,7 +9,7 @@
 <line x1="365" y1="205" x2="355" y2="330" stroke="#d9b26a" stroke-width="5"/>
 <line x1="435" y1="205" x2="445" y2="330" stroke="#d9b26a" stroke-width="5"/>
 <rect x="320" y="610" width="160" height="100" rx="12" fill="#000" fill-opacity="0.16"/>
-<text x="400" y="420" text-anchor="middle" fill="#d9b26a" font-family="Georgia, serif" font-size="62" font-style="italic">Everybody</text>
+<text x="400" y="420" text-anchor="middle" fill="#d9b26a" font-family="Georgia, serif" font-size="62" font-style="italic">Lagos</text>
 <text x="400" y="470" text-anchor="middle" fill="#d9b26a" fill-opacity="0.7" font-family="Arial, sans-serif" font-size="18" letter-spacing="10">WS / LAGOS</text>
 <line x1="300" y1="720" x2="500" y2="720" stroke="#d9b26a" stroke-opacity="0.35" stroke-width="3"/>
 <text x="52" y="930" fill="#ffffff" fill-opacity="0.45" font-family="Arial, sans-serif" font-size="20" letter-spacing="8">WS</text>

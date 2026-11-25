@@ -33,7 +33,7 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={submit} className="w-full max-w-lg">
-      <div className="flex border border-cream/30 focus-within:border-gold">
+      <div className="flex border border-cream/30 focus-within:border-accent">
         <label htmlFor="newsletter-email" className="sr-only">
           Email address
         </label>
@@ -50,7 +50,7 @@ export function NewsletterForm() {
           type="submit"
           disabled={status === "loading"}
           aria-label="Subscribe"
-          className="flex w-16 items-center justify-center border-l border-cream/30 text-cream transition-colors hover:bg-gold hover:text-ink disabled:opacity-50"
+          className="flex w-16 items-center justify-center border-l border-cream/30 text-cream transition-colors hover:bg-accent hover:text-ink disabled:opacity-50"
         >
           <ArrowUpRight size={20} />
         </button>
@@ -58,7 +58,7 @@ export function NewsletterForm() {
       {message && (
         <p
           role="status"
-          className={`mt-3 text-xs ${status === "error" ? "text-red-300" : "text-gold"}`}
+          className={`mt-3 text-xs ${status === "error" ? "text-red-300" : "text-accent"}`}
         >
           {message}
         </p>

@@ -9,10 +9,10 @@ const palettes = {
   "sapphire-automatic": { bg: "#0b1220", main: "#c8d2dc", accent: "#7fa6d8", dial: "#16305a" },
   "heritage-leather": { bg: "#1b120c", main: "#7c4a2d", accent: "#e5d2ae", dial: "#efe4cd" },
   "matrix-steel": { bg: "#101113", main: "#b8bec6", accent: "#8c949e", dial: "#2b3036" },
-  "ws-vs-everybody-tee": { bg: "#0d0d0d", main: "#171717", accent: "#f5efe4", dial: "#171717" },
+  "studio-tee": { bg: "#0d0d0d", main: "#171717", accent: "#f5efe4", dial: "#171717" },
   "crown-oversized-tee": { bg: "#d8ccb6", main: "#efe7d6", accent: "#b28a3c", dial: "#efe7d6" },
   "midnight-lagos-hoodie": { bg: "#0a0a12", main: "#151520", accent: "#d9b26a", dial: "#151520" },
-  "everybody-tank": { bg: "#111010", main: "#1d1c1c", accent: "#f5efe4", dial: "#1d1c1c" },
+  "everyday-tank": { bg: "#111010", main: "#1d1c1c", accent: "#f5efe4", dial: "#1d1c1c" },
   "oud-no-01": { bg: "#1a0f08", main: "#8c4a1c", accent: "#e0a55c", dial: "#f2dfc2" },
   "lagos-nights": { bg: "#070d1c", main: "#12305a", accent: "#6f9dd6", dial: "#dfe8f5" },
   "white-oud": { bg: "#d9d3c6", main: "#f2eee4", accent: "#b8a88c", dial: "#f7f4ec" },
@@ -89,13 +89,13 @@ function clothingBody(slug, p, back) {
   const base = shirtPath(kind, p);
   if (back) {
     return `${base}
-<text x="400" y="420" text-anchor="middle" fill="${p.accent}" font-family="Georgia, serif" font-size="62" font-style="italic">Everybody</text>
+<text x="400" y="420" text-anchor="middle" fill="${p.accent}" font-family="Georgia, serif" font-size="62" font-style="italic">Lagos</text>
 <text x="400" y="470" text-anchor="middle" fill="${p.accent}" fill-opacity="0.7" font-family="Arial, sans-serif" font-size="18" letter-spacing="10">WS / LAGOS</text>
 <line x1="300" y1="720" x2="500" y2="720" stroke="${p.accent}" stroke-opacity="0.35" stroke-width="3"/>`;
   }
   const chest = slug.includes("crown")
     ? `<path d="M350 390 L370 350 L390 375 L400 335 L410 375 L430 350 L450 390 Z" fill="${p.accent}"/><text x="400" y="445" text-anchor="middle" fill="${p.accent}" font-family="Arial, sans-serif" font-size="22" letter-spacing="8">CROWN</text>`
-    : `<text x="400" y="420" text-anchor="middle" fill="${p.accent}" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-4">WS</text><text x="400" y="458" text-anchor="middle" fill="${p.accent}" fill-opacity="0.85" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">VS EVERYBODY</text>`;
+    : `<text x="400" y="420" text-anchor="middle" fill="${p.accent}" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-4">WS</text><text x="400" y="458" text-anchor="middle" fill="${p.accent}" fill-opacity="0.85" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">EST. LAGOS</text>`;
   return `${base}${chest}`;
 }
 

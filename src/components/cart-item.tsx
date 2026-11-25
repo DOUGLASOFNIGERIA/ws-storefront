@@ -28,7 +28,7 @@ export function CartItem({ line, compact = false }: { line: CartLine; compact?: 
             <p className="text-[10px] uppercase tracking-widest2 text-muted">{line.variant}</p>
             <Link
               href={`/products/${line.slug}`}
-              className={`block truncate font-display tracking-wide hover:text-gold ${
+              className={`block truncate font-display tracking-[-0.01em] hover:text-accent ${
                 compact ? "text-2xl" : "text-3xl"
               }`}
             >
@@ -40,7 +40,7 @@ export function CartItem({ line, compact = false }: { line: CartLine; compact?: 
             type="button"
             onClick={() => removeItem(line.key)}
             aria-label={`Remove ${line.name}`}
-            className="text-muted transition-colors hover:text-gold"
+            className="text-muted transition-colors hover:text-accent"
           >
             <Trash2 size={17} strokeWidth={1.5} />
           </button>
@@ -51,7 +51,7 @@ export function CartItem({ line, compact = false }: { line: CartLine; compact?: 
               type="button"
               onClick={() => setQuantity(line.key, line.quantity - 1)}
               aria-label="Decrease quantity"
-              className="px-3 py-2 text-cream/70 hover:text-gold"
+              className="px-3 py-2 text-cream/70 hover:text-accent"
             >
               <Minus size={14} />
             </button>
@@ -60,12 +60,12 @@ export function CartItem({ line, compact = false }: { line: CartLine; compact?: 
               type="button"
               onClick={() => setQuantity(line.key, line.quantity + 1)}
               aria-label="Increase quantity"
-              className="px-3 py-2 text-cream/70 hover:text-gold"
+              className="px-3 py-2 text-cream/70 hover:text-accent"
             >
               <Plus size={14} />
             </button>
           </div>
-          <span className="font-display text-xl tracking-wide">
+          <span className="font-display text-xl tracking-[-0.01em]">
             {formatNaira(line.unitPriceKobo * line.quantity)}
           </span>
         </div>

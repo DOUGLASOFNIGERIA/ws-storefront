@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = CATEGORIES.find((item) => item.slug === slug);
   return {
     title: category ? category.label : "Shop all",
-    description: category?.blurb ?? "The complete WS collection.",
+    description: category?.blurb ?? "The complete WS edit: watches, clothing and fragrance.",
   };
 }
 
@@ -28,32 +28,29 @@ export default async function CollectionPage({ params }: PageProps) {
   const products = await getProducts(slug === "all" ? {} : { category: slug });
 
   return (
-    <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
-      <div className="relative mb-14 overflow-hidden border-b border-cream/10 pb-12">
-        <span className="outline-text pointer-events-none absolute -top-10 right-0 select-none font-display text-[10rem] leading-none lg:text-[16rem]">
-          WS
-        </span>
-        <p className="eyebrow relative">
-          <Link href="/" className="hover:text-gold">
+    <div className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+      <div className="mb-12 border-b border-cream/10 pb-10">
+        <p className="eyebrow">
+          <Link href="/" className="hover:text-accent">
             Home
           </Link>{" "}
           / {category ? category.label : "Shop all"}
         </p>
-        <h1 className="relative mt-6 font-display text-6xl tracking-wide sm:text-8xl lg:text-[10rem]">
+        <h1 className="mt-5 font-display text-6xl leading-[0.9] tracking-[-0.03em] sm:text-8xl">
           {category ? category.label : "Shop all"}
         </h1>
-        <p className="relative mt-4 max-w-lg text-sm text-muted">
-          {category?.blurb ?? "Every watch, every piece of clothing, every scent. One place."}
+        <p className="mt-5 max-w-lg text-sm leading-relaxed text-muted">
+          {category?.blurb ?? "Every watch, garment and scent in one place. Chosen with the same careful eye."}
         </p>
       </div>
 
-      <div className="mb-10 flex flex-wrap gap-3">
+      <div className="mb-8 flex flex-wrap gap-2">
         <Link
           href="/collections/all"
-          className={`border px-5 py-2.5 text-[11px] font-semibold uppercase tracking-widest2 transition-colors ${
+          className={`border px-5 py-2.5 text-[10px] font-semibold uppercase tracking-widest2 transition-colors ${
             slug === "all"
-              ? "border-gold bg-gold text-ink"
-              : "border-cream/25 text-cream/80 hover:border-gold hover:text-gold"
+              ? "border-accent bg-accent text-cream"
+              : "border-cream/20 text-cream/75 hover:border-accent hover:text-accent"
           }`}
         >
           All
@@ -62,10 +59,10 @@ export default async function CollectionPage({ params }: PageProps) {
           <Link
             key={item.slug}
             href={`/collections/${item.slug}`}
-            className={`border px-5 py-2.5 text-[11px] font-semibold uppercase tracking-widest2 transition-colors ${
+            className={`border px-5 py-2.5 text-[10px] font-semibold uppercase tracking-widest2 transition-colors ${
               slug === item.slug
-                ? "border-gold bg-gold text-ink"
-                : "border-cream/25 text-cream/80 hover:border-gold hover:text-gold"
+                ? "border-accent bg-accent text-cream"
+                : "border-cream/20 text-cream/75 hover:border-accent hover:text-accent"
             }`}
           >
             {item.label}
@@ -73,19 +70,19 @@ export default async function CollectionPage({ params }: PageProps) {
         ))}
       </div>
 
-      <p className="mb-8 text-xs uppercase tracking-widest2 text-muted">
-        {products.length} {products.length === 1 ? "product" : "products"}
+      <p className="mb-8 text-[10px] uppercase tracking-widest2 text-muted">
+        {products.length} {products.length === 1 ? "piece" : "pieces"}
       </p>
 
       {products.length === 0 ? (
         <div className="border border-cream/15 py-24 text-center">
-          <p className="font-display text-4xl tracking-wide">Nothing here yet.</p>
+          <p className="font-display text-4xl tracking-[-0.02em]">Nothing here yet.</p>
           <Link href="/collections/all" className="btn-outline mt-8">
             Shop all
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

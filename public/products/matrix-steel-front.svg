@@ -5,7 +5,7 @@
 </defs>
 <rect width="800" height="1000" fill="url(#bg)"/><rect width="800" height="1000" fill="url(#glow)"/>
 <path d="M280 205 L350 170 Q400 215 450 170 L520 205 L625 305 L550 380 L520 335 L520 790 Q400 820 280 790 L280 335 L250 380 L175 305 Z" fill="#b8bec6" stroke="#000" stroke-opacity="0.35" stroke-width="4"/>
-<path d="M350 170 Q400 215 450 170" fill="none" stroke="#8c949e" stroke-opacity="0.45" stroke-width="5"/><text x="400" y="420" text-anchor="middle" fill="#8c949e" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-4">WS</text><text x="400" y="458" text-anchor="middle" fill="#8c949e" fill-opacity="0.85" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">VS EVERYBODY</text>
+<path d="M350 170 Q400 215 450 170" fill="none" stroke="#8c949e" stroke-opacity="0.45" stroke-width="5"/><text x="400" y="420" text-anchor="middle" fill="#8c949e" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-4">WS</text><text x="400" y="458" text-anchor="middle" fill="#8c949e" fill-opacity="0.85" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">EST. LAGOS</text>
 <text x="52" y="930" fill="#ffffff" fill-opacity="0.45" font-family="Arial, sans-serif" font-size="20" letter-spacing="8">WS</text>
 <text x="52" y="962" fill="#ffffff" fill-opacity="0.3" font-family="Arial, sans-serif" font-size="12" letter-spacing="3">matrix-steel / front</text>
 </svg>

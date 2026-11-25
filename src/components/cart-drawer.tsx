@@ -23,7 +23,7 @@ export function CartDrawer() {
         <div className="flex items-center justify-between border-b border-cream/10 px-6 py-6">
           <div>
             <p className="eyebrow">Your bag</p>
-            <h2 className="font-display text-3xl tracking-wide">
+            <h2 className="font-display text-3xl tracking-[-0.01em]">
               {count} {count === 1 ? "item" : "items"}
             </h2>
           </div>
@@ -31,7 +31,7 @@ export function CartDrawer() {
             type="button"
             onClick={closeCart}
             aria-label="Close cart"
-            className="text-cream/70 transition-colors hover:text-gold"
+            className="text-cream/70 transition-colors hover:text-accent"
           >
             <X size={22} />
           </button>
@@ -40,7 +40,7 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto px-6">
           {lines.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-              <p className="font-display text-4xl tracking-wide text-cream/80">Nothing in here yet.</p>
+              <p className="font-display text-4xl tracking-[-0.01em] text-cream/80">Nothing in here yet.</p>
               <Link href="/collections/all" onClick={closeCart} className="btn-outline">
                 Shop all
               </Link>
@@ -58,7 +58,7 @@ export function CartDrawer() {
           <div className="border-t border-cream/10 px-6 py-6">
             <div className="mb-5 flex items-center justify-between text-sm">
               <span className="uppercase tracking-widest2 text-muted">Subtotal</span>
-              <span className="font-display text-2xl tracking-wide">{formatNaira(subtotalKobo)}</span>
+              <span className="font-display text-2xl tracking-[-0.01em]">{formatNaira(subtotalKobo)}</span>
             </div>
             <p className="mb-5 text-xs text-muted">Shipping calculated at checkout.</p>
             <Link href="/checkout" onClick={closeCart} className="btn-primary w-full">

@@ -54,7 +54,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       <div
         className={`border px-7 py-9 ${
           paid
-            ? "border-gold/50 bg-wine/30"
+            ? "border-accent/50 bg-wine/30"
             : failed
               ? "border-red-400/40 bg-red-500/10"
               : "border-cream/20 bg-wine/20"
@@ -62,7 +62,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
       >
         <div className="flex items-center gap-4">
           {paid ? (
-            <Check size={30} className="text-gold" strokeWidth={1.4} />
+            <Check size={30} className="text-accent" strokeWidth={1.4} />
           ) : failed ? (
             <X size={30} className="text-red-300" strokeWidth={1.4} />
           ) : (
@@ -70,7 +70,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           )}
           <div>
             <p className="eyebrow">Order {order.reference}</p>
-            <h1 className="mt-2 font-display text-5xl tracking-wide sm:text-6xl">
+            <h1 className="mt-2 font-display text-5xl tracking-[-0.01em] sm:text-6xl">
               {paid
                 ? "It's yours."
                 : failed
@@ -91,7 +91,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                 : "Your payment is still being confirmed. You can re-check the status below."}
         </p>
         {query.demo === "1" && order.status === "demo_paid" && (
-          <p className="mt-5 border border-gold/40 px-4 py-3 text-xs uppercase tracking-wider text-gold">
+          <p className="mt-5 border border-accent/40 px-4 py-3 text-xs uppercase tracking-wider text-accent">
             Demo checkout — no real payment was taken.
           </p>
         )}
@@ -131,7 +131,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
             </div>
             <div className="flex justify-between border-t border-cream/15 pt-4 font-semibold">
               <dt>Total</dt>
-              <dd className="font-display text-2xl tracking-wide">
+              <dd className="font-display text-2xl tracking-[-0.01em]">
                 {formatNaira(order.totalKobo)}
               </dd>
             </div>
