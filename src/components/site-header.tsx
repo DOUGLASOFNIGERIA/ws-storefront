@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/components/cart-provider";
 
@@ -14,7 +14,11 @@ const links = [
   { href: "/collections/perfume", label: "Fragrance" },
 ];
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  user?: { name: string; emailVerified: boolean } | null;
+}
+
+export function SiteHeader({ user }: SiteHeaderProps) {
   const pathname = usePathname();
   const { count, openCart, hydrated } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -62,6 +66,16 @@ export function SiteHeader() {
           >
             <Search size={19} strokeWidth={1.5} />
           </Link>
+          <Link
+            href={user ? "/account" : "/login"}
+            aria-label={user ? "Open account" : "Sign in"}
+            className="flex items-center gap-2 text-cream/80 transition-colors hover:text-accent"
+          >
+            <UserRound size={19} strokeWidth={1.5} />
+            <span className="hidden text-[10px] font-semibold uppercase tracking-widest2 xl:block">
+              {user ? (user.emailVerified ? "Account" : "Verify") : "Sign in"}
+            </span>
+          </Link>
           <button
             type="button"
             onClick={openCart}
@@ -96,6 +110,13 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href={user ? "/account" : "/login"}
+              onClick={() => setMenuOpen(false)}
+              className="border-b border-cream/10 py-3 font-display text-4xl leading-none text-accent"
+            >
+              {user ? (user.emailVerified ? "Account" : "Verify email") : "Sign in"}
+            </Link>
           </div>
         </nav>
       )}

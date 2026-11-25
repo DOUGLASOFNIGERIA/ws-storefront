@@ -4,7 +4,10 @@ import { CartProvider } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
+
+export const dynamic = "force-dynamic";
 
 const display = Cormorant_Garamond({
   weight: ["400", "500", "600"],
@@ -34,7 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body>
@@ -45,7 +49,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           >
             Skip to content
           </a>
-          <SiteHeader />
+          <SiteHeader
+            user={user ? { name: user.name, emailVerified: user.emailVerified } : null}
+          />
           <main id="MainContent" className="min-h-[60vh]">
             {children}
           </main>

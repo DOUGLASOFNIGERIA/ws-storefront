@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight, RefreshCw, Truck } from "lucide-react";
 import { AddToCart } from "@/components/add-to-cart";
 import { ProductCard } from "@/components/product-card";
+import { ProductReviews } from "@/components/product-reviews";
 import { getProductBySlug, getProducts } from "@/lib/catalog";
 import { formatNaira } from "@/lib/money";
 import { CATEGORIES } from "@/lib/types";
@@ -106,6 +107,8 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      <ProductReviews productId={product.id} />
 
       {related.length > 0 && (
         <section className="mt-28 border-t border-cream/10 pt-14">

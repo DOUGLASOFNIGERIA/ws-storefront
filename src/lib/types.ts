@@ -105,3 +105,26 @@ export const CATEGORIES: Array<{ slug: Category; label: string; blurb: string }>
 export function isCategory(value: string): value is Category {
   return CATEGORIES.some((category) => category.slug === value);
 }
+
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export interface Review {
+  id: string;
+  productId: string;
+  productSlug: string;
+  authorName: string;
+  rating: number;
+  title: string;
+  body: string;
+  status: ReviewStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  emailVerified: boolean;
+  role: "customer" | "admin";
+}

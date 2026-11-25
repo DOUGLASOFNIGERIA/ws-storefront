@@ -119,6 +119,15 @@ export async function getOrderByReference(reference: string): Promise<Order | nu
   return row ? mapOrder(row as Row) : null;
 }
 
+export async function getOrdersByEmail(email: string): Promise<Order[]> {
+  await ensureSchema();
+  const result = await db().execute({
+    sql: "SELECT * FROM orders WHERE lower(email) = ? ORDER BY created_at DESC",
+    args: [email.trim().toLowerCase()],
+  });
+  return result.rows.map((row) => mapOrder(row as Row));
+}
+
 export async function setOrderStatus(
   reference: string,
   status: OrderStatus,

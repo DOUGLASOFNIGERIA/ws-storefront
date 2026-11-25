@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { createClient, type Client } from "@libsql/client";
 import { SEED_PRODUCTS } from "./seed-data";
+import { SEED_REVIEWS } from "./seed-reviews";
 
 let client: Client | undefined;
 let schemaPromise: Promise<void> | undefined;
@@ -53,6 +54,45 @@ const SCHEMA = [
   )`,
   `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_reference ON orders(reference)`,
+  `CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    email_verified INTEGER NOT NULL DEFAULT 0,
+    role TEXT NOT NULL DEFAULT 'customer',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_login_at TEXT
+  )`,
+  `CREATE TABLE IF NOT EXISTS email_verification_tokens (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    used_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_verification_user ON email_verification_tokens(user_id)`,
+  `CREATE TABLE IF NOT EXISTS reviews (
+    id TEXT PRIMARY KEY,
+    product_id TEXT NOT NULL,
+    product_slug TEXT NOT NULL,
+    user_id TEXT,
+    author_name TEXT NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id, status)`,
+  `CREATE INDEX IF NOT EXISTS idx_reviews_status ON reviews(status)`,
+  `CREATE TABLE IF NOT EXISTS app_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`,
 ];
 
 const MIGRATIONS = [
@@ -116,6 +156,47 @@ export function ensureSchema(): Promise<void> {
               ],
             });
           }
+        } else {
+          for (const product of SEED_PRODUCTS) {
+            await db().execute({
+              sql: `UPDATE products SET
+                name = ?, subtitle = ?, description = ?, price_kobo = ?, compare_at_kobo = ?,
+                image_front = ?, image_back = ?, variants = ?, featured = ?, active = 1
+                WHERE slug = ? AND id LIKE 'ws-%'`,
+              args: [
+                product.name,
+                product.subtitle,
+                product.description,
+                product.priceKobo,
+                product.compareAtKobo,
+                product.imageFront,
+                product.imageBack,
+                JSON.stringify(product.variants),
+                product.featured ? 1 : 0,
+                product.slug,
+              ],
+            });
+          }
+        }
+        }
+
+      const reviewCount = await db().execute("SELECT COUNT(*) AS total FROM reviews");
+      if (Number(reviewCount.rows[0]?.total ?? 0) === 0) {
+        for (const review of SEED_REVIEWS) {
+          await db().execute({
+            sql: `INSERT OR IGNORE INTO reviews (
+              id, product_id, product_slug, user_id, author_name, rating, title, body, status
+            ) VALUES (?, (SELECT id FROM products WHERE slug = ? LIMIT 1), ?, NULL, ?, ?, ?, ?, 'approved')`,
+            args: [
+              review.id,
+              review.productSlug,
+              review.productSlug,
+              review.authorName,
+              review.rating,
+              review.title,
+              review.body,
+            ],
+          });
         }
       }
     })().catch((error) => {
