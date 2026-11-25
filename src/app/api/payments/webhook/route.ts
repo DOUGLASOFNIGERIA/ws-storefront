@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   if (event.event === "charge.success" && event.data?.reference) {
     const reference = event.data.reference;
     const order = await getOrderByReference(reference);
-    if (order && order.totalKobo === event.data.amount) {
+    if (order && order.gateway === "paystack" && order.totalKobo === event.data.amount) {
       await setOrderStatus(reference, "paid", reference);
     }
   }

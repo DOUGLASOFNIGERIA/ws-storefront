@@ -20,7 +20,11 @@ export function paystackConfigured(): boolean {
 }
 
 export function demoPaymentsEnabled(): boolean {
-  return process.env.WS_DEMO_PAYMENTS === "true" && !paystackConfigured();
+  return (
+    process.env.WS_DEMO_PAYMENTS === "true" &&
+    !paystackConfigured() &&
+    !process.env.FLW_SECRET_KEY?.trim()
+  );
 }
 
 function secret(): string {

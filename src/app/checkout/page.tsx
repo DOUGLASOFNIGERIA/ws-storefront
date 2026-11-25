@@ -2,14 +2,16 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, LoaderCircle } from "lucide-react";
+import { ArrowLeft, Banknote, CreditCard, Lock, LoaderCircle } from "lucide-react";
 import { useCart } from "@/components/cart-provider";
 import { formatNaira, shippingKobo } from "@/lib/money";
+import { PAYMENT_GATEWAYS, type PaymentGateway } from "@/lib/types";
 
 export default function CheckoutPage() {
   const { lines, subtotalKobo } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [gateway, setGateway] = useState<PaymentGateway>("paystack");
   const delivery = shippingKobo(subtotalKobo);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -26,6 +28,7 @@ export default function CheckoutPage() {
       city: String(form.get("city") ?? "").trim(),
       state: String(form.get("state") ?? "").trim(),
       postalCode: String(form.get("postalCode") ?? "").trim(),
+      gateway,
       items: lines.map((line) => ({
         productId: line.productId,
         variant: line.variant,
@@ -43,6 +46,7 @@ export default function CheckoutPage() {
         authorizationUrl?: string;
         reference?: string;
         demo?: boolean;
+        manual?: boolean;
         message?: string;
       };
       if (!response.ok) throw new Error(data.message || "Checkout failed");
@@ -51,6 +55,8 @@ export default function CheckoutPage() {
         window.location.assign(data.authorizationUrl);
       } else if (data.demo && data.reference) {
         window.location.assign(`/order/${data.reference}?demo=1`);
+      } else if (data.manual && data.reference) {
+        window.location.assign(`/order/${data.reference}?manual=1`);
       } else {
         throw new Error("No payment destination was returned");
       }
@@ -125,6 +131,42 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
 
+          <fieldset className="space-y-4">
+            <legend className="eyebrow mb-6 border-b border-cream/15 pb-4 w-full">Payment method</legend>
+            <div className="grid gap-3">
+              {PAYMENT_GATEWAYS.map((option) => {
+                const active = gateway === option.id;
+                const Icon = option.id === "manual" ? Banknote : CreditCard;
+                return (
+                  <label
+                    key={option.id}
+                    className={`flex cursor-pointer items-start gap-4 border p-4 transition-colors ${
+                      active
+                        ? "border-gold bg-gold/10"
+                        : "border-cream/15 hover:border-cream/40"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="gateway"
+                      value={option.id}
+                      checked={active}
+                      onChange={() => setGateway(option.id)}
+                      className="mt-1 accent-[#c9a227]"
+                    />
+                    <Icon size={18} className="mt-0.5 shrink-0 text-gold" />
+                    <span>
+                      <span className="block text-sm font-semibold uppercase tracking-widest2">
+                        {option.label}
+                      </span>
+                      <span className="mt-1 block text-xs text-muted">{option.detail}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+
           {error && (
             <p role="alert" className="border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
               {error}
@@ -138,12 +180,19 @@ export default function CheckoutPage() {
               </>
             ) : (
               <>
-                <Lock size={16} /> Pay {formatNaira(subtotalKobo + delivery)} with Paystack
+                <Lock size={16} /> Pay {formatNaira(subtotalKobo + delivery)} with{" "}
+                {gateway === "paystack"
+                  ? "Paystack"
+                  : gateway === "flutterwave"
+                    ? "Flutterwave"
+                    : "bank transfer"}
               </>
             )}
           </button>
           <p className="text-center text-xs text-muted">
-            You will be redirected to Paystack to complete payment securely.
+            {gateway === "manual"
+              ? "Your order will be reserved and we will share payment details by email."
+              : `You will be redirected to ${gateway === "paystack" ? "Paystack" : "Flutterwave"} to complete payment securely.`}
           </p>
         </form>
 

@@ -1,4 +1,19 @@
 export type Category = "watches" | "clothing" | "perfume";
+export type PaymentGateway = "paystack" | "flutterwave" | "manual";
+
+export const PAYMENT_GATEWAYS: Array<{
+  id: PaymentGateway;
+  label: string;
+  detail: string;
+}> = [
+  { id: "paystack", label: "Card · Paystack", detail: "Secure card checkout via Paystack." },
+  { id: "flutterwave", label: "Card · Flutterwave", detail: "Secure card, bank, and USSD checkout." },
+  { id: "manual", label: "Bank transfer", detail: "We hold the order until payment is confirmed." },
+];
+
+export function isPaymentGateway(value: unknown): value is PaymentGateway {
+  return value === "paystack" || value === "flutterwave" || value === "manual";
+}
 
 export interface Variant {
   name: string;
@@ -33,7 +48,7 @@ export interface CartLine {
   quantity: number;
 }
 
-export type OrderStatus = "pending" | "paid" | "failed" | "demo_paid";
+export type OrderStatus = "pending" | "pending_manual" | "paid" | "failed" | "demo_paid";
 
 export interface Order {
   id: string;
@@ -51,6 +66,7 @@ export interface Order {
   shippingKobo: number;
   totalKobo: number;
   status: OrderStatus;
+  gateway: PaymentGateway;
   paystackReference: string | null;
   createdAt: string;
 }
@@ -64,6 +80,7 @@ export interface CheckoutInput {
   state: string;
   postalCode?: string;
   country?: string;
+  gateway?: PaymentGateway;
   items: Array<{ productId: string; variant: string; quantity: number }>;
 }
 

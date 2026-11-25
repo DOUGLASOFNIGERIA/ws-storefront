@@ -38,6 +38,7 @@ export function mapOrder(row: Row): Order {
     shippingKobo: number(row.shipping_kobo),
     totalKobo: number(row.total_kobo),
     status: text(row.status) as OrderStatus,
+    gateway: (text(row.gateway) || "paystack") as Order["gateway"],
     paystackReference: row.paystack_reference == null ? null : text(row.paystack_reference),
     createdAt: text(row.created_at),
   };
@@ -74,6 +75,7 @@ export async function createOrder(order: NewOrder): Promise<Order> {
     shippingKobo: order.shippingKobo,
     totalKobo: order.totalKobo,
     status: "pending",
+    gateway: order.input.gateway ?? "paystack",
     paystackReference: null,
     createdAt: new Date().toISOString(),
   };
@@ -81,8 +83,8 @@ export async function createOrder(order: NewOrder): Promise<Order> {
   await db().execute({
     sql: `INSERT INTO orders (
       id, reference, email, customer_name, phone, address, city, state, postal_code,
-      country, items_json, subtotal_kobo, shipping_kobo, total_kobo, status, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      country, items_json, subtotal_kobo, shipping_kobo, total_kobo, status, gateway, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       record.id,
       record.reference,
@@ -99,6 +101,7 @@ export async function createOrder(order: NewOrder): Promise<Order> {
       record.shippingKobo,
       record.totalKobo,
       record.status,
+      record.gateway,
       record.createdAt,
     ],
   });

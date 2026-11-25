@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, Clock3, X } from "lucide-react";
+import { flutterwaveConfigured, verifyFlutterwavePayment } from "@/lib/flutterwave";
 import { formatNaira } from "@/lib/money";
 import { getOrderByReference, setOrderStatus } from "@/lib/orders";
 import { demoPaymentsEnabled, paystackConfigured, verifyPayment } from "@/lib/paystack";
@@ -10,7 +11,7 @@ export const metadata = { title: "Order" };
 
 interface PageProps {
   params: Promise<{ reference: string }>;
-  searchParams: Promise<{ verify?: string; demo?: string }>;
+  searchParams: Promise<{ verify?: string; demo?: string; manual?: string }>;
 }
 
 export default async function OrderPage({ params, searchParams }: PageProps) {
@@ -19,20 +20,26 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
   let order = await getOrderByReference(reference);
   if (!order) notFound();
 
-  if (
-    query.verify === "1" &&
-    order.status === "pending" &&
-    !demoPaymentsEnabled() &&
-    paystackConfigured()
-  ) {
+  if (query.verify === "1" && order.status === "pending" && !demoPaymentsEnabled()) {
     try {
-      const verification = await verifyPayment(order.paystackReference ?? order.reference);
-      order =
-        (await setOrderStatus(
-          order.reference,
-          verification.ok && verification.amountKobo === order.totalKobo ? "paid" : "failed",
-          verification.reference,
-        )) ?? order;
+      let verification:
+        | { ok: boolean; amountKobo: number; reference: string }
+        | undefined;
+
+      if (order.gateway === "flutterwave" && flutterwaveConfigured()) {
+        verification = await verifyFlutterwavePayment(order.paystackReference ?? order.reference);
+      } else if (order.gateway === "paystack" && paystackConfigured()) {
+        verification = await verifyPayment(order.paystackReference ?? order.reference);
+      }
+
+      if (verification) {
+        order =
+          (await setOrderStatus(
+            order.reference,
+            verification.ok && verification.amountKobo === order.totalKobo ? "paid" : "failed",
+            verification.reference,
+          )) ?? order;
+      }
     } catch (error) {
       console.error("Callback verification failed", error);
     }
@@ -40,6 +47,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
 
   const paid = order.status === "paid" || order.status === "demo_paid";
   const failed = order.status === "failed";
+  const manual = order.status === "pending_manual";
 
   return (
     <div className="mx-auto max-w-[1000px] px-5 py-16 sm:px-8 lg:py-24">
@@ -63,7 +71,13 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           <div>
             <p className="eyebrow">Order {order.reference}</p>
             <h1 className="mt-2 font-display text-5xl tracking-wide sm:text-6xl">
-              {paid ? "It's yours." : failed ? "Payment not completed." : "Awaiting payment."}
+              {paid
+                ? "It's yours."
+                : failed
+                  ? "Payment not completed."
+                  : manual
+                    ? "Bank transfer pending."
+                    : "Awaiting payment."}
             </h1>
           </div>
         </div>
@@ -72,7 +86,9 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
             ? `Thank you, ${order.customerName}. We've received your order and will send delivery updates to ${order.email}.`
             : failed
               ? "We couldn't confirm your payment. If your bank was charged, contact us with your order reference."
-              : "Your payment is still being confirmed. You can re-check the status below."}
+              : manual
+                ? "Your order is reserved. Payment instructions have been sent to your email; we will dispatch once the transfer is confirmed."
+                : "Your payment is still being confirmed. You can re-check the status below."}
         </p>
         {query.demo === "1" && order.status === "demo_paid" && (
           <p className="mt-5 border border-gold/40 px-4 py-3 text-xs uppercase tracking-wider text-gold">
@@ -133,6 +149,9 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
             <p>{order.country}</p>
             <p className="pt-3 text-muted">{order.phone}</p>
             <p className="text-muted">{order.email}</p>
+            <p className="pt-3 text-muted">
+              Payment method: {order.gateway === "manual" ? "Bank transfer" : order.gateway === "flutterwave" ? "Flutterwave" : "Paystack"}
+            </p>
           </address>
           <Link href="/collections/all" className="btn-outline mt-10">
             Continue shopping

@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { lineKey } from "@/lib/cart";
 import { getProductById } from "@/lib/catalog";
 import { shippingKobo } from "@/lib/money";
+import { flutterwaveConfigured, initializeFlutterwavePayment } from "@/lib/flutterwave";
 import { createOrder, setOrderStatus } from "@/lib/orders";
 import { demoPaymentsEnabled, initializePayment, paystackConfigured } from "@/lib/paystack";
-import type { CartLine, CheckoutInput } from "@/lib/types";
+import {
+  isPaymentGateway,
+  type CartLine,
+  type CheckoutInput,
+  type PaymentGateway,
+} from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -15,6 +21,7 @@ function required(value: unknown): value is string {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as Partial<CheckoutInput>;
+    const gateway: PaymentGateway = isPaymentGateway(body.gateway) ? body.gateway : "paystack";
 
     if (
       !required(body.email) ||
@@ -78,6 +85,7 @@ export async function POST(request: NextRequest) {
         state: body.state.trim(),
         postalCode: typeof body.postalCode === "string" ? body.postalCode.trim() : undefined,
         country: "Nigeria",
+        gateway,
       },
       lines,
       subtotalKobo,
@@ -90,26 +98,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ demo: true, reference: order.reference });
     }
 
+    const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+    const baseUrl = configuredUrl || request.nextUrl.origin;
+    const callbackUrl = `${baseUrl}/order/${order.reference}?verify=1`;
+    const metadata = {
+      order_reference: order.reference,
+      customer_name: order.customerName,
+      gateway,
+      items: lines.map((line) => `${line.name} x${line.quantity}`),
+    };
+
+    if (gateway === "manual") {
+      await setOrderStatus(order.reference, "pending_manual");
+      return NextResponse.json({ manual: true, reference: order.reference });
+    }
+
+    if (gateway === "flutterwave") {
+      if (!flutterwaveConfigured()) {
+        await setOrderStatus(order.reference, "failed");
+        return NextResponse.json(
+          { message: "Flutterwave is not configured. Set FLW_SECRET_KEY or choose another method." },
+          { status: 503 },
+        );
+      }
+      const payment = await initializeFlutterwavePayment({
+        email: order.email,
+        customerName: order.customerName,
+        amountKobo: order.totalKobo,
+        reference: order.reference,
+        callbackUrl,
+        metadata,
+      });
+      return NextResponse.json({ authorizationUrl: payment.authorizationUrl, reference: order.reference });
+    }
+
     if (!paystackConfigured()) {
       await setOrderStatus(order.reference, "failed");
       return NextResponse.json(
-        { message: "Payments are not configured. Set PAYSTACK_SECRET_KEY or enable demo mode." },
+        { message: "Paystack is not configured. Set PAYSTACK_SECRET_KEY or choose another method." },
         { status: 503 },
       );
     }
 
-    const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-    const baseUrl = configuredUrl || request.nextUrl.origin;
     const payment = await initializePayment({
       email: order.email,
       amountKobo: order.totalKobo,
       reference: order.reference,
-      callbackUrl: `${baseUrl}/order/${order.reference}?verify=1`,
-      metadata: {
-        order_reference: order.reference,
-        customer_name: order.customerName,
-        items: lines.map((line) => `${line.name} x${line.quantity}`),
-      },
+      callbackUrl,
+      metadata,
     });
 
     return NextResponse.json({ authorizationUrl: payment.authorizationUrl, reference: order.reference });

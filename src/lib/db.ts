@@ -44,11 +44,16 @@ const SCHEMA = [
     shipping_kobo INTEGER NOT NULL,
     total_kobo INTEGER NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
+    gateway TEXT NOT NULL DEFAULT 'paystack',
     paystack_reference TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
   `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_reference ON orders(reference)`,
+];
+
+const MIGRATIONS = [
+  `ALTER TABLE orders ADD COLUMN gateway TEXT NOT NULL DEFAULT 'paystack'`,
 ];
 
 export function db(): Client {
@@ -71,6 +76,13 @@ export function ensureSchema(): Promise<void> {
     schemaPromise = (async () => {
       for (const statement of SCHEMA) {
         await db().execute(statement);
+      }
+      for (const statement of MIGRATIONS) {
+        try {
+          await db().execute(statement);
+        } catch (error) {
+          if (!/duplicate column|already exists/i.test(String(error))) throw error;
+        }
       }
     })().catch((error) => {
       schemaPromise = undefined;

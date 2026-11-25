@@ -12,6 +12,10 @@ export function nairaToKobo(naira: number): number {
   return Math.round(naira * koboPerNaira);
 }
 
+export function koboToNaira(kobo: number): number {
+  return kobo / koboPerNaira;
+}
+
 export function shippingKobo(subtotalKobo: number): number {
   return subtotalKobo >= nairaToKobo(150_000) ? 0 : nairaToKobo(2500);
 }
