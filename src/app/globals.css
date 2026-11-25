@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink text-cream font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-gold text-ink;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-widest2 text-muted;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-cream px-7 py-4 text-xs font-bold uppercase tracking-widest2 text-ink transition-colors duration-200 hover:bg-gold disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-cream/30 px-7 py-4 text-xs font-bold uppercase tracking-widest2 text-cream transition-colors duration-200 hover:border-gold hover:text-gold;
+  }
+
+  .outline-text {
+    -webkit-text-stroke: 1.5px rgba(245, 239, 228, 0.3);
+    color: transparent;
+  }
+
+  .field {
+    @apply w-full border border-cream/20 bg-transparent px-4 py-4 text-sm text-cream outline-none transition-colors placeholder:text-muted/60 focus:border-gold;
+  }
+
+  .label {
+    @apply mb-2 block text-[11px] font-semibold uppercase tracking-widest2 text-muted;
+  }
+}

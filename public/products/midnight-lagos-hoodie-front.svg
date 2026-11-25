@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a0a12"/><stop offset="1" stop-color="#000" stop-opacity="0.35"/></linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.42" r="0.55"><stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="800" height="1000" fill="url(#bg)"/><rect width="800" height="1000" fill="url(#glow)"/>
+<path d="M275 210 L350 165 Q400 205 450 165 L525 210 L635 310 L555 385 L525 340 L525 800 Q400 830 275 800 L275 340 L245 385 L165 310 Z" fill="#151520" stroke="#000" stroke-opacity="0.35" stroke-width="4"/>
+<path d="M330 165 Q400 90 470 165 Q400 230 330 165 Z" fill="#0a0a12" stroke="#d9b26a" stroke-opacity="0.35" stroke-width="4"/>
+<line x1="365" y1="205" x2="355" y2="330" stroke="#d9b26a" stroke-width="5"/>
+<line x1="435" y1="205" x2="445" y2="330" stroke="#d9b26a" stroke-width="5"/>
+<rect x="320" y="610" width="160" height="100" rx="12" fill="#000" fill-opacity="0.16"/><text x="400" y="420" text-anchor="middle" fill="#d9b26a" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="bold" letter-spacing="-4">WS</text><text x="400" y="458" text-anchor="middle" fill="#d9b26a" fill-opacity="0.85" font-family="Arial, sans-serif" font-size="16" letter-spacing="5">VS EVERYBODY</text>
+<text x="52" y="930" fill="#ffffff" fill-opacity="0.45" font-family="Arial, sans-serif" font-size="20" letter-spacing="8">WS</text>
+<text x="52" y="962" fill="#ffffff" fill-opacity="0.3" font-family="Arial, sans-serif" font-size="12" letter-spacing="3">midnight-lagos-hoodie / front</text>
+</svg>

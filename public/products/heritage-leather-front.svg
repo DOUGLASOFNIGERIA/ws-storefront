@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b120c"/><stop offset="1" stop-color="#000" stop-opacity="0.35"/></linearGradient>
+<radialGradient id="glow" cx="0.5" cy="0.42" r="0.55"><stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="800" height="1000" fill="url(#bg)"/><rect width="800" height="1000" fill="url(#glow)"/>
+<rect x="332" y="90" width="136" height="820" rx="24" fill="#7c4a2d"/>
+<rect x="352" y="90" width="96" height="820" rx="16" fill="#000" fill-opacity="0.18"/>
+<circle cx="400" cy="500" r="196" fill="#7c4a2d" stroke="#e5d2ae" stroke-width="8"/>
+<circle cx="400" cy="500" r="170" fill="#efe4cd" stroke="#000" stroke-opacity="0.4" stroke-width="4"/>
+<line x1="400.0" y1="372.0" x2="400.0" y2="355.0" stroke="#e5d2ae" stroke-width="9" stroke-linecap="round"/><line x1="464.0" y1="389.1" x2="472.5" y2="374.4" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="510.9" y1="436.0" x2="525.6" y2="427.5" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="528.0" y1="500.0" x2="545.0" y2="500.0" stroke="#e5d2ae" stroke-width="9" stroke-linecap="round"/><line x1="510.9" y1="564.0" x2="525.6" y2="572.5" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="464.0" y1="610.9" x2="472.5" y2="625.6" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="400.0" y1="628.0" x2="400.0" y2="645.0" stroke="#e5d2ae" stroke-width="9" stroke-linecap="round"/><line x1="336.0" y1="610.9" x2="327.5" y2="625.6" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="289.1" y1="564.0" x2="274.4" y2="572.5" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="272.0" y1="500.0" x2="255.0" y2="500.0" stroke="#e5d2ae" stroke-width="9" stroke-linecap="round"/><line x1="289.1" y1="436.0" x2="274.4" y2="427.5" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/><line x1="336.0" y1="389.1" x2="327.5" y2="374.4" stroke="#e5d2ae" stroke-width="4" stroke-linecap="round"/>
+<circle cx="340" cy="500" r="34" fill="none" stroke="#e5d2ae" stroke-opacity="0.55" stroke-width="3"/>
+<circle cx="460" cy="500" r="34" fill="none" stroke="#e5d2ae" stroke-opacity="0.55" stroke-width="3"/>
+<text x="400" y="430" text-anchor="middle" fill="#e5d2ae" font-family="Arial, sans-serif" font-size="40" font-weight="bold" letter-spacing="4">WS</text>
+<line x1="400" y1="500" x2="400" y2="390" stroke="#e5d2ae" stroke-width="10" stroke-linecap="round"/>
+<line x1="400" y1="500" x2="482" y2="540" stroke="#e5d2ae" stroke-width="7" stroke-linecap="round"/>
+<circle cx="400" cy="500" r="12" fill="#e5d2ae"/>
+<text x="400" y="585" text-anchor="middle" fill="#e5d2ae" fill-opacity="0.8" font-family="Arial, sans-serif" font-size="14" letter-spacing="4">AUTOMATIC</text>
+<text x="52" y="930" fill="#ffffff" fill-opacity="0.45" font-family="Arial, sans-serif" font-size="20" letter-spacing="8">WS</text>
+<text x="52" y="962" fill="#ffffff" fill-opacity="0.3" font-family="Arial, sans-serif" font-size="12" letter-spacing="3">heritage-leather / front</text>
+</svg>
